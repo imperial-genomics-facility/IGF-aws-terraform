@@ -59,6 +59,9 @@ module "s3_bucket_raw_runs" {
     {
       id      = "lifecycle-runs"
       enabled = true
+
+      abort_incomplete_multipart_upload_days = 7
+
       filter = {
         prefix = "runs/"
       }
