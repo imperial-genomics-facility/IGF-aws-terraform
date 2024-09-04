@@ -108,3 +108,20 @@ variable "name" {
   type        = string
   default     = ""
 }
+
+## s3_raw_run_bucket
+variable "s3_raw_run_bucket_id" {
+  description = "S3 raw run bucket name"
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9-]+$", var.s3_raw_run_bucket_id))
+    error_message = "S3 raw run bucket is not correctly formatted"
+  }
+
+  validation {
+    condition     = length(var.s3_raw_run_bucket_id) >= 8
+    error_message = "S3 raw run bucket name is too small"
+  }
+}

@@ -35,3 +35,42 @@ module "vpc" {
 
   tags = merge(var.resource_tags, local.required_tags)
 }
+
+## S3
+module "s3_bucket_raw_runs" {
+  source = "terraform-aws-modules/s3-bucket/aws"
+
+  bucket = var.s3_raw_run_bucket_id
+  acl    = "private"
+
+  force_destroy = false
+  block_public_acls = true
+
+  control_object_ownership = true
+  object_ownership         = "ObjectWriter"
+
+  versioning = {
+    enabled = true
+  }
+  
+  tags = merge(var.resource_tags, local.required_tags)
+
+  lifecycle_rule = [
+    {
+      id      = "lifecycle-runs"
+      enabled = true
+      filter = {
+        prefix = "runs/"
+      }
+
+      expiration = {
+        days = 30
+        expired_object_delete_marker = true
+      }
+
+      noncurrent_version_expiration = {
+        days = 7
+      }
+    }
+  ]
+}

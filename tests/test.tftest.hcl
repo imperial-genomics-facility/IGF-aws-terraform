@@ -13,18 +13,28 @@ variables {
     "10.0.3.0/24",
     "10.0.4.0/24",
     "10.0.5.0/24"]
+  s3_raw_run_bucket_id = "testrawRunBucket"
 }
 
 run "valid_subnets" {
   command = plan
 
   assert {
-    condition     = length(module.vpc.public_subnets)==3
+    condition     = length(module.vpc.public_subnets) == 3
     error_message = "Expecting three public subnets"
   }
 
   assert {
-    condition     = length(module.vpc.private_subnets)==3
+    condition     = length(module.vpc.private_subnets) == 3
     error_message = "Expecting three private subnets"
+  }
+}
+
+run "valid_s3_bucket_lifecycle_configuration_rules" {
+  command = plan
+
+  assert {
+    condition       = module.s3_bucket_raw_runs.s3_bucket_lifecycle_configuration_rules != ""
+    error_message   = "Incorrect S3 bucket lifecycle configuration rules"
   }
 }
