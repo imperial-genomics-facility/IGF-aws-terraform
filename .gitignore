@@ -39,3 +39,4 @@ terraform.rc
 ## Extra files to ignore
 *.tfplan
 *.png
+.terraform.lock.hcl
