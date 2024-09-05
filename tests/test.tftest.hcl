@@ -20,12 +20,12 @@ run "valid_subnets" {
   command = plan
 
   assert {
-    condition     = length(module.vpc.public_subnets) >= 1
+    condition     = length(module.vpc.public_subnets) == 1
     error_message = "Expecting three public subnets"
   }
 
   assert {
-    condition     = length(module.vpc.private_subnets) >= 1
+    condition     = length(module.vpc.private_subnets) == 1
     error_message = "Expecting three private subnets"
   }
 }
