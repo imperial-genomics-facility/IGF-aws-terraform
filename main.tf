@@ -113,8 +113,8 @@ module "efs-scratch" {
 }
 
 ## ECR - demult
-resource "aws_ecr_repository" "igf-pipeline-ecr-demult" {
-  name                 = "${var.name}/demult"
+resource "aws_ecr_repository" "igf-pipeline-ecr-bclconvert" {
+  name                 = "${var.name}-demult/bclconvert"
   image_tag_mutability = "MUTABLE"
   force_delete         = false
   tags                 = local.tags
