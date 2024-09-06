@@ -133,7 +133,7 @@ resource "aws_ecr_repository" "igf-pipeline-ecr-bclconvert" {
 resource "aws_security_group" "demult_batch_sg" {
   name        = "demult_batch_sg"
   description = "place holder"
-  vpc_id      = module.vpc.id
+  vpc_id      = module.vpc.vpc_id
 
   tags = {
     Name = "TO DO"
