@@ -130,30 +130,40 @@ resource "aws_ecr_repository" "igf-pipeline-ecr-bclconvert" {
   }
 }
 
+resource "aws_security_group" "demult_batch_sg" {
+  name        = "demult_batch_sg"
+  description = "place holder"
+  vpc_id      = module.vpc.id
+
+  tags = {
+    Name = "TO DO"
+  }
+}
+
 ## BATCH - demult
 module "batch-demult-bclconvert" {
   source = "terraform-aws-modules/batch/aws"
 
   create_instance_iam_role              = true
-  instance_iam_role_additional_policies = []
-  instance_iam_role_description         = null
-  instance_iam_role_name                = null
-  instance_iam_role_path                = null
-  instance_iam_role_tags                = local.tags
+  #instance_iam_role_additional_policies = []
+  #instance_iam_role_description         = null
+  instance_iam_role_name                = "${var.name}-demult-instance"
+  #instance_iam_role_path                = null
+  #instance_iam_role_tags                = local.tags
 
   create_service_iam_role              = true
-  service_iam_role_additional_policies = []
-  service_iam_role_description         = null
-  service_iam_role_name                = null
-  service_iam_role_path                = null
-  service_iam_role_tags                = local.tags
+  #service_iam_role_additional_policies = []
+  #service_iam_role_description         = null
+  service_iam_role_name                = "${var.name}-demult-service"
+  #service_iam_role_path                = null
+  #service_iam_role_tags                = local.tags
 
   create_spot_fleet_iam_role              = true
-  spot_fleet_iam_role_additional_policies = []
-  spot_fleet_iam_role_description         = null
-  spot_fleet_iam_role_name                = null
-  spot_fleet_iam_role_path                = null
-  spot_fleet_iam_role_tags                = local.tags
+  #spot_fleet_iam_role_additional_policies = []
+  #spot_fleet_iam_role_description         = null
+  spot_fleet_iam_role_name                = "${var.name}-demult-spot-fleet"
+  #spot_fleet_iam_role_path                = null
+  #spot_fleet_iam_role_tags                = local.tags
 
   ## BATCH - demult - compute env
   compute_environments = {
@@ -164,6 +174,7 @@ module "batch-demult-bclconvert" {
         type      = "FARGATE_SPOT"
         max_vcpus = 16
         subnets   = module.vpc.public_subnets
+        security_group_ids = [aws_security_group.demult_batch_sg.id]
         tags      = local.tags
       }
     }
