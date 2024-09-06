@@ -18,6 +18,8 @@ locals {
 
   private_subnets = slice(var.private_subnet_cidr_blocks, 0, 1)
   public_subnets  = slice(var.public_subnet_cidr_blocks, 0, 1)
+
+  bclconvert_image_url = "637423521863.dkr.ecr.eu-west-2.amazonaws.com/igf_pipeline-demult/bclconvert:4.3.6"
 }
 
 ## VPC
@@ -126,4 +128,113 @@ resource "aws_ecr_repository" "igf-pipeline-ecr-bclconvert" {
   encryption_configuration {
     encryption_type = "AES256"
   }
+}
+
+## BATCH - demult
+module "batch-demult-bclconvert" {
+  source = "terraform-aws-modules/batch/aws"
+
+  create_instance_iam_role              = true
+  instance_iam_role_additional_policies = []
+  instance_iam_role_description         = null
+  instance_iam_role_name                = null
+  instance_iam_role_path                = null
+  instance_iam_role_tags                = local.tags
+
+  create_service_iam_role              = true
+  service_iam_role_additional_policies = []
+  service_iam_role_description         = null
+  service_iam_role_name                = null
+  service_iam_role_path                = null
+  service_iam_role_tags                = local.tags
+
+  create_spot_fleet_iam_role              = true
+  spot_fleet_iam_role_additional_policies = []
+  spot_fleet_iam_role_description         = null
+  spot_fleet_iam_role_name                = null
+  spot_fleet_iam_role_path                = null
+  spot_fleet_iam_role_tags                = local.tags
+
+  ## BATCH - demult - compute env
+  compute_environments = {
+    a_fargate_spot = {
+      name_prefix = "fargate_spot"
+
+      compute_resources = {
+        type      = "FARGATE_SPOT"
+        max_vcpus = 16
+        subnets   = module.vpc.public_subnets
+        tags      = local.tags
+      }
+    }
+  }
+
+  # BATCH - demult - job queus and scheduling policies
+  job_queues = {
+    compute_environments = ["a_fargate_spot"]
+
+    tags = {
+      JobQueue = "Single job queue"
+    }
+  }
+
+
+  ## BATCH - demult - job definitions
+  job_definitions = {
+    name           = "${var.name}-bclconvert"
+    propagate_tags = true
+
+    container_properties = jsonencode({
+      image   = local.bclconvert_image_url
+      command = ["bcl-convert", "-h"]
+      mountPoints = [{
+        sourceVolume  = "efs-scratch"
+        containerPath = "/mount/efs"
+        readOnly      = false
+      }]
+
+      volumes = [{
+        name = "efs-scratch"
+        efsVolumeConfiguration = {
+          fileSystemId = module.efs-scratch.id
+        }
+      }]
+
+
+      fargatePlatformConfiguration = {
+        platformVersion = "LATEST"
+      }
+      resourceRequirements = [
+        { type = "VCPU", value = "1" },
+        { type = "MEMORY", value = "4096" }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = "/aws/batch/demult-bclconvert"
+          awslogs-region        = var.aws_region
+          awslogs-stream-prefix = "ec2"
+        }
+      }
+    })
+    attempt_duration_seconds = 3600
+    retry_strategy = {
+      attempts = 3
+      evaluate_on_exit = {
+        retry_error = {
+          action       = "RETRY"
+          on_exit_code = 1
+        }
+        exit_success = {
+          action       = "EXIT"
+          on_exit_code = 0
+        }
+      }
+    }
+
+    tags = {
+      JobDefinition = "Example"
+    }
+  }
+  tags = local.tags
 }
