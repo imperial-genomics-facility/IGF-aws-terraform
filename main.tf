@@ -130,157 +130,165 @@ resource "aws_ecr_repository" "igf-pipeline-ecr-bclconvert" {
   }
 }
 
-resource "aws_security_group" "demult_batch_sg" {
-  name        = "demult_batch_sg"
-  description = "place holder"
-  vpc_id      = module.vpc.vpc_id
+## BATCH
 
-  tags = {
-    Name = "TO DO"
+data "aws_iam_policy_document" "ec2_assume_role" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
   }
 }
 
-## BATCH - demult
-module "batch-demult-bclconvert" {
-  source = "terraform-aws-modules/batch/aws"
+resource "aws_iam_role" "ecs_instance_role" {
+  name               = "ecs_instance_role"
+  assume_role_policy = data.aws_iam_policy_document.ec2_assume_role.json
+}
 
-  create_instance_iam_role              = true
-  #instance_iam_role_additional_policies = []
-  #instance_iam_role_description         = null
-  instance_iam_role_name                = "${var.name}-demult-instance"
-  #instance_iam_role_path                = null
-  #instance_iam_role_tags                = local.tags
+resource "aws_iam_role_policy_attachment" "ecs_instance_role" {
+  role       = aws_iam_role.ecs_instance_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+}
 
-  create_service_iam_role              = true
-  #service_iam_role_additional_policies = []
-  #service_iam_role_description         = null
-  service_iam_role_name                = "${var.name}-demult-service"
-  #service_iam_role_path                = null
-  #service_iam_role_tags                = local.tags
+resource "aws_iam_instance_profile" "ecs_instance_role" {
+  name = "ecs_instance_role"
+  role = aws_iam_role.ecs_instance_role.name
+}
 
-  create_spot_fleet_iam_role              = true
-  #spot_fleet_iam_role_additional_policies = []
-  #spot_fleet_iam_role_description         = null
-  spot_fleet_iam_role_name                = "${var.name}-demult-spot-fleet"
-  #spot_fleet_iam_role_path                = null
-  #spot_fleet_iam_role_tags                = local.tags
+data "aws_iam_policy_document" "batch_assume_role" {
+  statement {
+    effect = "Allow"
 
-  ## BATCH - demult - compute env
-  compute_environments = {
-    a_fargate_spot = {
-      name_prefix = "fargate_spot"
-
-      compute_resources = {
-        type      = "FARGATE_SPOT"
-        max_vcpus = 16
-        subnets   = module.vpc.public_subnets
-        security_group_ids = [aws_security_group.demult_batch_sg.id]
-        tags      = local.tags
-      }
+    principals {
+      type        = "Service"
+      identifiers = ["batch.amazonaws.com"]
     }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+resource "aws_iam_role" "aws_batch_service_role" {
+  name               = "aws_batch_service_role"
+  assume_role_policy = data.aws_iam_policy_document.batch_assume_role.json
+}
+
+resource "aws_iam_role_policy_attachment" "aws_batch_service_role" {
+  role       = aws_iam_role.aws_batch_service_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole"
+}
+
+resource "aws_security_group" "demult_batch_sg" {
+  name        = "demult_batch_sg"
+  description = "Allow all egress for public images"
+  vpc_id      = module.vpc.vpc_id
+
+  tags = {
+    Name = "Test"
+  }
+}
+
+resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
+  security_group_id = aws_security_group.demult_batch_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1" # semantically equivalent to all ports
+}
+
+resource "aws_batch_compute_environment" "igf-pipeline-fargate" {
+  compute_environment_name = "${var.name}-fargate"
+
+  compute_resources {
+    max_vcpus = 16
+
+    security_group_ids = [
+      aws_security_group.demult_batch_sg.id
+    ]
+
+    ## USING PUBLIC SUBNET
+    subnets = module.vpc.public_subnets
+
+    type = "FARGATE"
   }
 
-  # BATCH - demult - job queus and scheduling policies
-  job_queues = {
-    low_priority = {
-      name     = "LowPriorityFargate"
-      state    = "ENABLED"
-      priority = 1
+  service_role = aws_iam_role.aws_batch_service_role.arn
+  type         = "MANAGED"
+  depends_on   = [aws_iam_role_policy_attachment.aws_batch_service_role]
 
-      compute_environments = ["a_fargate_spot"]
+  tags = local.tags
+}
 
-      tags = {
-        JobQueue = "Low priority job queue"
-      }
-    }
+resource "aws_batch_job_queue" "igf-pipeline-demult" {
+  name     = "${var.name}-demult"
+  state    = "ENABLED"
+  priority = 1
 
-    high_priority = {
-      name     = "HighPriorityFargate"
-      state    = "ENABLED"
-      priority = 99
-
-      fair_share_policy = {
-        compute_reservation = 1
-        share_decay_seconds = 3600
-
-        share_distribution = [{
-          share_identifier = "A1*"
-          weight_factor    = 0.1
-          }, {
-          share_identifier = "A2"
-          weight_factor    = 0.2
-        }]
-      }
-
-      tags = {
-        JobQueue = "High priority job queue"
-      }
-    }
-
-    # compute_environments = ["a_fargate_spot"]
-
-    # tags = {
-    #   JobQueue = "Single job queue"
-    # }
-  }
-
-
-  ## BATCH - demult - job definitions
-  job_definitions = {
-    name           = "${var.name}-bclconvert"
-    propagate_tags = true
-
-    container_properties = jsonencode({
-      image   = local.bclconvert_image_url
-      command = ["bcl-convert", "-h"]
-      mountPoints = [{
-        sourceVolume  = "efs-scratch"
-        containerPath = "/mount/efs"
-        readOnly      = false
-      }]
-
-      volumes = [{
-        name = "efs-scratch"
-        efsVolumeConfiguration = {
-          fileSystemId = module.efs-scratch.id
-        }
-      }]
-
-
-      fargatePlatformConfiguration = {
-        platformVersion = "LATEST"
-      }
-      resourceRequirements = [
-        { type = "VCPU", value = "1" },
-        { type = "MEMORY", value = "4096" }
-      ]
-      logConfiguration = {
-        logDriver = "awslogs"
-        options = {
-          awslogs-group         = "/aws/batch/demult-bclconvert"
-          awslogs-region        = var.aws_region
-          awslogs-stream-prefix = "ec2"
-        }
-      }
-    })
-    attempt_duration_seconds = 3600
-    retry_strategy = {
-      attempts = 3
-      evaluate_on_exit = {
-        retry_error = {
-          action       = "RETRY"
-          on_exit_code = 1
-        }
-        exit_success = {
-          action       = "EXIT"
-          on_exit_code = 0
-        }
-      }
-    }
-
-    tags = {
-      JobDefinition = "Example"
-    }
+  compute_environment_order {
+    order               = 1
+    compute_environment = aws_batch_compute_environment.igf-pipeline-fargate.arn
   }
   tags = local.tags
+}
+
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name               = "${var.name}-_batch_exec_role"
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
+}
+
+data "aws_iam_policy_document" "assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+resource "aws_batch_job_definition" "igf-pipeline-bclconvert" {
+  name = "${var.name}-bclconvert"
+  type = "container"
+
+  deregister_on_new_revision = true
+
+  platform_capabilities = [
+    "FARGATE",
+  ]
+
+  container_properties = jsonencode({
+    command    = ["bcl-convert", "-h"]
+    image      = local.bclconvert_image_url
+
+    fargatePlatformConfiguration = {
+      platformVersion = "LATEST"
+    }
+
+    resourceRequirements = [
+      {
+        type  = "VCPU"
+        value = "0.25"
+      },
+      {
+        type  = "MEMORY"
+        value = "512"
+      }
+    ]
+
+    executionRoleArn = aws_iam_role.ecs_task_execution_role.arn
+    jobRoleArn       = aws_iam_role.ecs_task_execution_role.arn
+
+    networkConfiguration = {
+      assignPublicIp  = "ENABLED"
+    }
+  })
 }
