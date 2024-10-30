@@ -125,3 +125,29 @@ variable "s3_raw_run_bucket_id" {
     error_message = "S3 raw run bucket name is too small"
   }
 }
+
+variable "ami_id_for_ec2_batch" {
+  description = "AMI id for EC2 Batch env"
+  type        = string
+  default     = ""
+  validation {
+    condition     = length(var.ami_id_for_ec2_batch) > 10
+    error_message = "AMI id is too small"
+  }
+  validation {
+    condition     = can(regex("^ami-*", var.ami_id_for_ec2_batch))
+    error_message = "AMI id is not correctly formatted"
+  }
+}
+
+variable "ec2_batch_image_type" {
+  description = "EC2 batch image type"
+  type        = string
+  default     = "ECS_AL2023"
+}
+
+variable "nf-core-rnaseq-info" {
+  description = "NF-core RNA-Seq info"
+  type        = object
+  default     = {}
+}
