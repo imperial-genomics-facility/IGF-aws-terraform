@@ -1,19 +1,12 @@
-## AWS region variable
-variable "aws_region" {
-  description = "AWS region"
-  type        = string
-  default     = "eu-west-2"
-}
-
 ## vpc cidr block variable
 variable "vpc_cidr_block" {
   description = "CIDR block for VPC"
   type        = string
   default     = ""
-  validation {
-    condition     = can(regex("\\d+\\.\\d+\\.\\d+\\.\\d+\\/\\d+", var.vpc_cidr_block))
-    error_message = "VPC CIDR block is incorrectly formatted"
-  }
+  # validation {
+  #   condition     = can(regex("\\d+\\.\\d+\\.\\d+\\.\\d+\\/\\d+", var.vpc_cidr_block))
+  #   error_message = "VPC CIDR block is incorrectly formatted"
+  # }
 }
 
 ## vpc public subnets
@@ -21,10 +14,10 @@ variable "public_subnet_cidr_blocks" {
   description = "Available cidr blocks for public subnets."
   type        = list(string)
   default     = []
-  validation {
-    condition     = length(var.public_subnet_cidr_blocks) == 3
-    error_message = "Three public subnet cids list required"
-  }
+  # validation {
+  #   condition     = length(var.public_subnet_cidr_blocks) == 3
+  #   error_message = "Three public subnet cids list required"
+  # }
 }
 
 ## vpc private subnets
@@ -32,10 +25,10 @@ variable "private_subnet_cidr_blocks" {
   description = "Available cidr blocks for private subnets."
   type        = list(string)
   default     = []
-  validation {
-    condition     = length(var.private_subnet_cidr_blocks) == 3
-    error_message = "Three private subnet cids list required"
-  }
+  # validation {
+  #   condition     = length(var.private_subnet_cidr_blocks) == 3
+  #   error_message = "Three private subnet cids list required"
+  # }
 }
 
 ## vpc enable_nat_gateway
@@ -56,7 +49,7 @@ variable "enable_vpn_gateway" {
 variable "project_name" {
   description = "A project name for the resource"
   type        = string
-  default     = ""
+  default     = "Test"
   validation {
     condition     = can(regex("^[a-zA-Z-_]+$", var.project_name))
     error_message = "Project name is not correctly formatted"
@@ -67,7 +60,7 @@ variable "project_name" {
 variable "environment" {
   description = "An environment name for the resource"
   type        = string
-  default     = ""
+  default     = "DEV"
   validation {
     condition     = contains(["DEV", "PROD"], var.environment)
     error_message = "VPC environment is not PROD or DEV"
@@ -109,45 +102,8 @@ variable "vpc_name" {
   default     = ""
 }
 
-## s3_raw_run_bucket
-variable "s3_raw_run_bucket_id" {
-  description = "S3 raw run bucket name"
+variable "aws_region" {
+  description = "AWS region"
   type        = string
-  default     = ""
-
-  validation {
-    condition     = can(regex("^[a-zA-Z0-9-]+$", var.s3_raw_run_bucket_id))
-    error_message = "S3 raw run bucket is not correctly formatted"
-  }
-
-  validation {
-    condition     = length(var.s3_raw_run_bucket_id) >= 8
-    error_message = "S3 raw run bucket name is too small"
-  }
-}
-
-variable "ami_id_for_ec2_batch" {
-  description = "AMI id for EC2 Batch env"
-  type        = string
-  default     = ""
-  validation {
-    condition     = length(var.ami_id_for_ec2_batch) > 10
-    error_message = "AMI id is too small"
-  }
-  validation {
-    condition     = can(regex("^ami-*", var.ami_id_for_ec2_batch))
-    error_message = "AMI id is not correctly formatted"
-  }
-}
-
-variable "ec2_batch_image_type" {
-  description = "EC2 batch image type"
-  type        = string
-  default     = "ECS_AL2023"
-}
-
-variable "nf-core-rnaseq-info" {
-  description = "NF-core RNA-Seq info"
-  type        = object
-  default     = {}
+  default     = "eu-west-2"
 }
