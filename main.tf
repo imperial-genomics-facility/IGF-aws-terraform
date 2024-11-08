@@ -2,6 +2,8 @@ provider "aws" {
   region = var.aws_region
 }
 
+## iam
+
 ## create vpc, subnets and endpoints
 module "igf_vpc" {
   source = "./modules/vpc"
@@ -22,8 +24,42 @@ module "igf_vpc" {
   private_subnet_cidr_blocks = var.private_subnet_cidr_blocks
 }
 
+## iam
+module "igf_batch_roles" {
+  source = "./modules/iam"
+
+  iam_role_prefix = "test_igf"
+}
+
 ## create s3 buckets
 module "igf_s3_bucket" {
   source = "./modules/s3_bucket"
+
+  aws_batch_execution_role = module.igf_batch_roles.batch_execution_role_arn
 }
 
+## batch - compute env - fargate
+module "igf_batch_compute_env_fargate" {
+  source  = "./modules/batch/compute_env/fargate"
+  subnets = module.igf_vpc.vpc_private_subnets
+  vpc_id  = module.igf_vpc.vpc_id
+
+  service_role_arn         = module.iam.batch_service_role_arn
+  service_role_profile_arn = module.iam.batch_service_role_profile_arn
+  ecs_instance_role_arn    = module.iam.batch_ecs_instance_role_arn
+  service_role_name        = module.iam.batch_service_role_name
+}
+
+## batch - compute env - ec2
+module "igf_batch_compute_env_ec2" {
+  source                   = "./modules/batch/compute_env/ec2"
+  subnets                  = module.igf_vpc.vpc_private_subnets
+  vpc_id                   = module.igf_vpc.vpc_id
+  service_role_arn         = module.iam.batch_service_role_arn
+  ecs_instance_role_arn    = module.iam.batch_ecs_instance_role_arn
+  service_role_profile_arn = module.iam.batch_service_role_profile_arn
+  service_role_name        = module.iam.batch_service_role_name
+  image_type               = "ECS_AL2023"
+  spot_iam_fleet_role      = module.iam.batch_spot_fleet_tagging_role_arn
+  ami_id                   = "ami-0d8c895399d776b1e"
+}
