@@ -80,3 +80,9 @@ variable "s3_static_resource_bucket_name" {
         error_message = "S3 raw run bucket name is too small"
     }
 }
+
+variable "aws_batch_execution_role" {
+  description = "Batch execution role"
+  type        = string
+  default     = ""
+}

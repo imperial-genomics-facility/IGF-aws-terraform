@@ -7,6 +7,7 @@ locals {
   }
   tags = merge(var.resource_tags, local.required_tags)
 
+  aws_batch_execution_role = var.aws_batch_execution_role
 }
 data "aws_caller_identity" "current" {}
 
@@ -37,21 +38,20 @@ resource "aws_s3_bucket_policy" "main_s3_bucket_policy" {
           "aws:SecureTransport" = true
         }
       }
+    },{
+      Sid = "S3-secure-access-policy-use-tls-from-batch"
+      Effect = "Allow"
+      Principal = {
+        AWS = "${local.aws_batch_execution_role}"
+      }
+      Action   = "s3:GetObject"
+      Resource = "${aws_s3_bucket.main_s3_bucket.arn}/*"
+      Condition = {
+        Bool = {
+          "aws:SecureTransport" = true
+        }
+      }
     }
-    # ,{
-    #   Sid = "S3-secure-access-policy-use-tls-from-batch"
-    #   Effect = "Allow"
-    #   Principal = {
-    #     AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/igf_pipeline-_batch_exec_role"
-    #   }
-    #   Action   = "s3:GetObject"
-    #   Resource = "${aws_s3_bucket.main_s3_bucket.arn}/*"
-    #   Condition = {
-    #     Bool = {
-    #       "aws:SecureTransport" = true
-    #     }
-    #   }
-    # }
     ]
   })
 }
@@ -198,20 +198,20 @@ resource "aws_s3_bucket_policy" "static_resource_s3_bucket_policy" {
           "aws:SecureTransport" = true
         }
       }
-     }#,{
-    #   Sid = "S3-secure-access-policy-use-tls-from-batch"
-    #   Effect = "Allow"
-    #   Principal = {
-    #     AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/igf_pipeline-_batch_exec_role"
-    #   }
-    #   Action   = "s3:GetObject"
-    #   Resource = "${aws_s3_bucket.main_s3_bucket.arn}/*"
-    #   Condition = {
-    #     Bool = {
-    #       "aws:SecureTransport" = true
-    #     }
-    #   }
-    # }
+     },{
+      Sid = "S3-secure-access-policy-use-tls-from-batch"
+      Effect = "Allow"
+      Principal = {
+        AWS = "${local.aws_batch_execution_role}"
+      }
+      Action   = "s3:GetObject"
+      Resource = "${aws_s3_bucket.main_s3_bucket.arn}/*"
+      Condition = {
+        Bool = {
+          "aws:SecureTransport" = true
+        }
+      }
+    }
     ]
   })
 }
