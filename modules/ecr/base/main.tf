@@ -14,6 +14,6 @@ resource "aws_ecr_repository" "igf-pipeline-ecr" {
   }
 
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = false
   }
 } 
