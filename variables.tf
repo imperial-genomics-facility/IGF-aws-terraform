@@ -146,8 +146,8 @@ variable "ec2_batch_image_type" {
   default     = "ECS_AL2023"
 }
 
-variable "nf-core-rnaseq-info" {
-  description = "NF-core RNA-Seq info"
-  type        = object
-  default     = {}
+variable "nf_rnaseq_ecr_input_json" {
+  description = "nf_rnaseq_ecr_input_json"
+  type        = string
+  default     = "nf_rnaseq_ecr_input_json"
 }

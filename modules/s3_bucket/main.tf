@@ -15,13 +15,13 @@ data "aws_caller_identity" "current" {}
 resource "aws_s3_bucket" "main_s3_bucket" {
   bucket = var.s3_main_bucket_name
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = false
   }
   tags = local.tags
 }
 
 resource "aws_s3_bucket_policy" "main_s3_bucket_policy" {
-  bucket = aws_s3_bucket.test_example.id
+  bucket = aws_s3_bucket.main_s3_bucket.id
   policy = jsonencode({
     Version = "2012-10-17"
     Id      = "S3-secure-access-policy"
@@ -62,7 +62,7 @@ resource "aws_s3_bucket_acl" "main_s3_bucket" {
   acl    = "private"
   depends_on = [aws_s3_bucket_ownership_controls.main_s3_bucket_acl_ownership]
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = false
   }
 }
 
@@ -72,7 +72,7 @@ resource "aws_s3_bucket_ownership_controls" "main_s3_bucket_acl_ownership" {
     object_ownership = "ObjectWriter"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = false
   }
 }
 
@@ -83,7 +83,7 @@ resource "aws_s3_bucket_versioning" "main_s3_bucket_versioning" {
     status = "Enabled"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = false
   }
 }
 
@@ -105,7 +105,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "main_s3_bucket" {
     status = "Enabled"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = false
   }
 }
 
@@ -114,7 +114,7 @@ resource "aws_s3_bucket" "log_bucket" {
   bucket = var.s3_logging_bucket_name
 
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = false
   }
 }
 
@@ -125,7 +125,7 @@ resource "aws_s3_bucket_acl" "log_bucket_acl" {
   depends_on = [aws_s3_bucket_ownership_controls.log_bucket_acl_ownership]
 
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = false
   }
 }
 
@@ -136,7 +136,7 @@ resource "aws_s3_bucket_ownership_controls" "log_bucket_acl_ownership" {
   }
 
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = false
   }
 }
 
@@ -156,7 +156,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "log_example" {
     status = "Enabled"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = false
   }
 }
 
@@ -167,7 +167,7 @@ resource "aws_s3_bucket_logging" "main_s3_bucket" {
   target_prefix = "log/"
 
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = false
   }
 }
 
@@ -175,7 +175,7 @@ resource "aws_s3_bucket_logging" "main_s3_bucket" {
 resource "aws_s3_bucket" "static_resource_s3_bucket" {
   bucket = var.s3_static_resource_bucket_name
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = false
   }
   tags = local.tags
 }
@@ -222,7 +222,7 @@ resource "aws_s3_bucket_acl" "static_resource_s3_bucket" {
   acl    = "private"
   depends_on = [aws_s3_bucket_ownership_controls.static_resource_s3_bucket_acl_ownership]
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = false
   }
 }
 
@@ -232,7 +232,7 @@ resource "aws_s3_bucket_ownership_controls" "static_resource_s3_bucket_acl_owner
     object_ownership = "ObjectWriter"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = false
   }
 }
 
@@ -251,7 +251,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "static_resource_s3_bucket" {
     status = "Enabled"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = false
   }
 }
 
@@ -259,7 +259,7 @@ resource "aws_s3_bucket_intelligent_tiering_configuration" "static_resource_s3_b
   bucket = aws_s3_bucket.static_resource_s3_bucket.id
   name   = "EntireBucket"
   tiering {
-    access_tier = "STANDARD_IA"
+    access_tier = "ARCHIVE_ACCESS"
     days        = 30
   }
 }

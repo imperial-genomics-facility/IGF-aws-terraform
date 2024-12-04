@@ -76,7 +76,7 @@ resource "aws_vpc_endpoint" "batch-test-endpoint" {
   security_group_ids = [
     aws_security_group.endpoint_security_group.id
   ]
-  tags = tags
+  tags = local.tags
 }
 
 resource "aws_vpc_endpoint" "ecr-dkr-test-endpoint" {
@@ -88,7 +88,7 @@ resource "aws_vpc_endpoint" "ecr-dkr-test-endpoint" {
   security_group_ids = [
     aws_security_group.endpoint_security_group.id
   ]
-  tags = tags
+  tags = local.tags
 }
 
 resource "aws_vpc_endpoint" "ecr-api-test-endpoint" {
@@ -100,7 +100,7 @@ resource "aws_vpc_endpoint" "ecr-api-test-endpoint" {
   security_group_ids = [
     aws_security_group.endpoint_security_group.id
   ]
-  tags = tags
+  tags = local.tags
 }
 
 resource "aws_vpc_endpoint" "logs-test-endpoint" {
@@ -112,7 +112,7 @@ resource "aws_vpc_endpoint" "logs-test-endpoint" {
   security_group_ids = [
     aws_security_group.endpoint_security_group.id
   ]
-  tags = tags
+  tags = local.tags
 }
 
 resource "aws_vpc_endpoint" "ecs-test-endpoint" {
@@ -124,7 +124,7 @@ resource "aws_vpc_endpoint" "ecs-test-endpoint" {
   security_group_ids = [
     aws_security_group.endpoint_security_group.id
   ]
-  tags = tags
+  tags = local.tags
 }
 
 resource "aws_vpc_endpoint" "ecs-agent-test-endpoint" {
@@ -136,7 +136,7 @@ resource "aws_vpc_endpoint" "ecs-agent-test-endpoint" {
   security_group_ids = [
     aws_security_group.endpoint_security_group.id
   ]
-  tags = tags
+  tags = local.tags
 }
 
 resource "aws_vpc_endpoint" "ecs-telemetry-test-endpoint" {
@@ -148,7 +148,7 @@ resource "aws_vpc_endpoint" "ecs-telemetry-test-endpoint" {
   security_group_ids = [
     aws_security_group.endpoint_security_group.id
   ]
-  tags = tags
+  tags = local.tags
 }
 
 resource "aws_vpc_endpoint" "s3-test-endpoint" {
@@ -157,5 +157,5 @@ resource "aws_vpc_endpoint" "s3-test-endpoint" {
   vpc_endpoint_type = "Gateway"
 
   route_table_ids  = module.vpc.private_route_table_ids
-  tags = tags
+  tags = local.tags
 }

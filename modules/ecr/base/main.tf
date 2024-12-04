@@ -1,4 +1,7 @@
 ## ECR - demult
+locals {
+  
+}
 resource "aws_ecr_repository" "igf-pipeline-ecr" {
   name                 = "${var.project_name}/${var.ecr_repo_name}"
   image_tag_mutability = "MUTABLE"

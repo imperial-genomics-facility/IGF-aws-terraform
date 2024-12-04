@@ -23,9 +23,3 @@ variable "force_delete" {
   type        = bool
   default     = false
 }
-
-variable "prevent_destroy" {
-  description = "ECR lifecycle prevent_destroy"
-  type        = bool
-  default     = false
-}

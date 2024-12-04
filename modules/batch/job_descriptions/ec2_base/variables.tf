@@ -1,5 +1,5 @@
-variable "region" {
-    description = "Region name"
+variable "job_description_name" {
+    description = "job_description_name"
     type = string
     default = ""
 }
@@ -16,14 +16,14 @@ variable "execution_role_arn" {
   default     = ""
 }
 
-variable "container_version" {
-  description = "Container version"
-  type        = string
-  default     = "latest"
+variable "deregister_on_new_revision" {
+  description = "deregister_on_new_revision"
+  type        = bool
+  default     = true
 }
 
-variable "repo_prefix" {
-  description = "Repository prefix name"
+variable "ecr_image_url" {
+  description = "ecr_image_url"
   type        = string
   default     = ""
 }

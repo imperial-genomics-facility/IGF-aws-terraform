@@ -16,7 +16,7 @@ variable "s3_main_bucket_name" {
 variable "project_name" {
   description = "A project name for the resource"
   type        = string
-  default     = ""
+  default     = "TEST"
   validation {
     condition     = can(regex("^[a-zA-Z-_]+$", var.project_name))
     error_message = "Project name is not correctly formatted"
@@ -27,7 +27,7 @@ variable "project_name" {
 variable "environment" {
   description = "An environment name for the resource"
   type        = string
-  default     = ""
+  default     = "DEV"
   validation {
     condition     = contains(["DEV", "PROD"], var.environment)
     error_message = "VPC environment is not PROD or DEV"
@@ -39,12 +39,6 @@ variable "resource_tags" {
   description = "Map of resource tags"
   type        = map(string)
   default     = {}
-}
-
-variable "prevent_destroy" {
-    description = "Lifecycle - prefent destroy"
-    type        = bool
-    default     = false
 }
 
 variable "s3_main_bucket_expiration_days" {
