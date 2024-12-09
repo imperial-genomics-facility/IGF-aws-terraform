@@ -8,7 +8,7 @@ locals {
 }
 
 module "ecr_repo_and_job_desccription_wrapper" {
-    source = "../config_parse"
+    source = "../ec2_config_parse"
 
     repo_name_prefix = local.repo_name_prefix
     container_maps   = local.container_maps

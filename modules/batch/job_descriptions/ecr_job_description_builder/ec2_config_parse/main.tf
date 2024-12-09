@@ -5,7 +5,7 @@ locals {
 }
 
 module "ecr_job_description_builder" {
-    source = "../base"
+    source = "../ec2_base"
 
     repo_prefix = local.repo_name_prefix
     region      = local.region

@@ -28,6 +28,6 @@ module "build_batch_job_decrtiption" {
     execution_role_arn         = local.execution_role_arn
     job_role_arn               = local.job_role_arn
 
-    depends_on = [ module.build_ecr_repo ] ## FIX ME: add output
+    depends_on = [ module.build_ecr_repo.ecr_image_arn ]
 
 }
