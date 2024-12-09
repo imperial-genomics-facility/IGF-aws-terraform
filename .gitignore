@@ -41,3 +41,4 @@ terraform.rc
 *.tfplan
 *.png
 .terraform.lock.hcl
+*:Zone.Identifier
