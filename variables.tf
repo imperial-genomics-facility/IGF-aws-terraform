@@ -146,8 +146,12 @@ variable "ec2_batch_image_type" {
   default     = "ECS_AL2023"
 }
 
-variable "nf_rnaseq_ecr_input_json" {
-  description = "nf_rnaseq_ecr_input_json"
+variable "ec2_batch_ecr_job_description_image_list" {
+  description = "ec2_batch_ecr_job_description_image_list"
   type        = string
-  default     = "nf_rnaseq_ecr_input_json"
+  default     = []
+  validation {
+    condition     = length(var.ec2_batch_ecr_job_description_image_list) > 0
+    error_message = "Missing json config file for ecr and job description building"
+  }
 }

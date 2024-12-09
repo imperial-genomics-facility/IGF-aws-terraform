@@ -70,5 +70,6 @@ module "igf_batch_compute_env_ec2" {
 
 module "igf_nextflow_ecr_and_job_desccription" {
   source = "./modules/batch/job_descriptions/ecr_job_description_builder/wrapper"
-  config_json_file = var.nf_rnaseq_ecr_input_json
+  count  = length(var.ec2_batch_ecr_job_description_image_list)
+  config_json_file = var.ec2_batch_ecr_job_description_image_list[count.index]
 }
