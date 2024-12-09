@@ -77,7 +77,7 @@ module "igf_ec2_ecr_and_job_description" {
 
 ## fargate - ecr - job description
 module "igf_fargate_ecr_and_job_description" {
-  source = ""
+  source = "./modules/batch/job_descriptions/ecr_job_description_builder/fargate_wrapper"
   count  = length(var.fargate_batch_ecr_job_description_image_list)
   config_json_file = var.fargate_batch_ecr_job_description_image_list[count.index]
 }
