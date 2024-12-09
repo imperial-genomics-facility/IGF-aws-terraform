@@ -1,14 +1,3 @@
-variable "repo_name_prefix" {
-    description = "value"
-    type        = string
-}
-
-variable "region" {
-  description = "Region"
-  type        = string
-  default     = ""
-}
-
 variable "container_maps" {
   description = "value"
   type        = list(map(string))

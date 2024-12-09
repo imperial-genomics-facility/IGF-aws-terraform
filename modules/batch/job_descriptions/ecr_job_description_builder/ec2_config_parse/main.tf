@@ -7,6 +7,11 @@ locals {
 module "ecr_job_description_builder" {
     source = "../ec2_base"
 
+    count = length(local.container_maps)
+
+    container_map = local.container_maps[count.index]
     repo_prefix = local.repo_name_prefix
     region      = local.region
+    execution_role_arn         = var.execution_role_arn
+    job_role_arn               = var.job_role_arn
 }

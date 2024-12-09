@@ -73,6 +73,8 @@ module "igf_ec2_ecr_and_job_description" {
   source = "./modules/batch/job_descriptions/ecr_job_description_builder/ec2_wrapper"
   count  = length(var.ec2_batch_ecr_job_description_image_list)
   config_json_file = var.ec2_batch_ecr_job_description_image_list[count.index]
+  execution_role_arn  = module.igf_batch_roles.batch_execution_role_arn
+  job_role_arn        = module.igf_batch_roles.batch_job_role_arn
 }
 
 ## fargate - ecr - job description
@@ -84,7 +86,7 @@ module "igf_fargate_ecr_and_job_description" {
 
 ## fargate - job description
 module "igf_fargate_job_description" {
-  source = ""
+  source = "./modules/batch/job_descriptions/job_description_builder/fargate_wrapper"
   count  = length(var.fargate_batch_job_description_image_list)
   config_json_file = var.fargate_batch_job_description_image_list[count.index]
 }
