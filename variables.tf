@@ -126,16 +126,16 @@ variable "s3_raw_run_bucket_id" {
   }
 }
 
-variable "ami_id_for_ec2_batch" {
+variable "ec2_batch_ami_id" {
   description = "AMI id for EC2 Batch env"
   type        = string
   default     = ""
   validation {
-    condition     = length(var.ami_id_for_ec2_batch) > 10
+    condition     = length(var.ec2_batch_ami_id) > 10
     error_message = "AMI id is too small"
   }
   validation {
-    condition     = can(regex("^ami-*", var.ami_id_for_ec2_batch))
+    condition     = can(regex("^ami-*", var.ec2_batch_ami_id))
     error_message = "AMI id is not correctly formatted"
   }
 }
@@ -148,10 +148,78 @@ variable "ec2_batch_image_type" {
 
 variable "ec2_batch_ecr_job_description_image_list" {
   description = "ec2_batch_ecr_job_description_image_list"
-  type        = string
+  type        = list(string)
   default     = []
   validation {
     condition     = length(var.ec2_batch_ecr_job_description_image_list) > 0
+    error_message = "Missing json config file for ecr and job description building"
+  }
+}
+
+variable "s3_main_bucket_name" {
+  description = "s3_main_bucket_name"
+  type        = string
+  default     = ""
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9-]+$", var.s3_main_bucket_name))
+    error_message = "S3 raw run bucket is not correctly formatted"
+  }
+  validation {
+    condition     = length(var.s3_main_bucket_name) >= 8
+    error_message = "S3 raw run bucket name is too small"
+  }
+}
+
+variable "s3_logging_bucket_name" {
+  description = "s3_logging_bucket_name"
+  type        = string
+  default     = ""
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9-]+$", var.s3_logging_bucket_name))
+    error_message = "S3 raw run bucket is not correctly formatted"
+  }
+  validation {
+    condition     = length(var.s3_logging_bucket_name) >= 8
+    error_message = "S3 raw run bucket name is too small"
+  }
+}
+
+variable "s3_static_resource_bucket_name" {
+  description = "s3_static_resource_bucket_name"
+  type        = string
+  default     = ""
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9-]+$", var.s3_static_resource_bucket_name))
+    error_message = "S3 raw run bucket is not correctly formatted"
+  }
+  validation {
+    condition     = length(var.s3_static_resource_bucket_name) >= 8
+    error_message = "S3 raw run bucket name is too small"
+  }
+}
+
+variable "iam_role_prefix" {
+  description = "iam_role_prefix"
+  type        = string
+  default     = ""
+}
+
+variable "fargate_batch_ecr_job_description_image_list" {
+  description = "fargate_batch_ecr_job_description_image_list"
+  type        = list(string)
+  default     = []
+  validation {
+    condition     = length(var.fargate_batch_ecr_job_description_image_list) > 0
+    error_message = "Missing json config file for ecr and job description building"
+  }
+}
+
+variable "fargate_batch_job_description_image_list" {
+  description = "fargate_batch_job_description_image_list"
+  type        = list(string)
+  default     = []
+  validation {
+    condition     = length(var.fargate_batch_job_description_image_list) > 0
     error_message = "Missing json config file for ecr and job description building"
   }
 }

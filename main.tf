@@ -28,16 +28,16 @@ module "igf_vpc" {
 module "igf_batch_roles" {
   source = "./modules/iam"
 
-  iam_role_prefix = "test_igf"
+  iam_role_prefix = var.iam_role_prefix
 }
 
 ## create s3 buckets
 module "igf_s3_bucket" {
   source = "./modules/s3_bucket"
 
-  s3_main_bucket_name = "test-012345678"
-  s3_logging_bucket_name = "test-012345678-log"
-  s3_static_resource_bucket_name = "test-012345678-resource"
+  s3_main_bucket_name = var.s3_main_bucket_name
+  s3_logging_bucket_name = var.s3_logging_bucket_name
+  s3_static_resource_bucket_name = var.s3_static_resource_bucket_name
 
   aws_batch_execution_role = module.igf_batch_roles.batch_execution_role_arn
 }
@@ -63,13 +63,28 @@ module "igf_batch_compute_env_ec2" {
   ecs_instance_role_arn    = module.igf_batch_roles.batch_ecs_instance_role_arn
   service_role_profile_arn = module.igf_batch_roles.batch_service_role_profile_arn
   service_role_name        = module.igf_batch_roles.batch_service_role_name
-  image_type               = "ECS_AL2023"
+  image_type               = var.ec2_batch_image_type
   spot_iam_fleet_role      = module.igf_batch_roles.batch_spot_fleet_tagging_role_arn
-  ami_id                   = "ami-0d8c895399d776b1e"
+  ami_id                   = var.ec2_batch_ami_id
 }
 
-module "igf_nextflow_ecr_and_job_desccription" {
-  source = "./modules/batch/job_descriptions/ecr_job_description_builder/wrapper"
+## ec2 - ecr - job_descriptions
+module "igf_ec2_ecr_and_job_description" {
+  source = "./modules/batch/job_descriptions/ecr_job_description_builder/ec2_wrapper"
   count  = length(var.ec2_batch_ecr_job_description_image_list)
   config_json_file = var.ec2_batch_ecr_job_description_image_list[count.index]
+}
+
+## fargate - ecr - job description
+module "igf_fargate_ecr_and_job_description" {
+  source = ""
+  count  = length(var.fargate_batch_ecr_job_description_image_list)
+  config_json_file = var.fargate_batch_ecr_job_description_image_list[count.index]
+}
+
+## fargate - job description
+module "igf_fargate_job_description" {
+  source = ""
+  count  = length(var.fargate_batch_job_description_image_list)
+  config_json_file = var.fargate_batch_job_description_image_list[count.index]
 }
