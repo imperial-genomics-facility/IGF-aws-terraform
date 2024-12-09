@@ -1,11 +1,10 @@
 data "aws_caller_identity" "current" {}
 
 locals {
-    container_map = var.container_map
-    repo_prefix   = var.repo_prefix
-    ecr_repo_name = var.container_map.ecr_repo_name
-    region        = var.region
-
+    container_map              = var.container_map
+    repo_prefix                = var.repo_prefix
+    ecr_repo_name              = var.container_map.ecr_repo_name
+    region                     = var.region
     job_description_name       = var.container_map.name
     deregister_on_new_revision = var.deregister_on_new_revision
     ecr_image_url              = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${local.region}.amazonaws.com/${local.repo_prefix}/${local.ecr_repo_name}"
