@@ -39,3 +39,21 @@ variable "execution_role_arn" {
   type        = string
   default     = ""
 }
+
+variable "container_map" {
+  description = "container_map"
+  type        = map(string)
+  default     = {}
+  validation {
+    condition = contains(keys(var.container_map), "ecr_repo_name")
+    error_message = "Not correctly formatted, missing ecr_repo_name"
+  }
+  validation {
+    condition = contains(keys(var.container_map), "name")
+    error_message = "Not correctly formatted, missing name"
+  }
+  validation {
+    condition = contains(keys(var.container_map), "container")
+    error_message = "Not correctly formatted, missing container"
+  }
+}

@@ -9,6 +9,18 @@ variable "region" {
   default     = ""
 }
 
+variable "job_role_arn" {
+    description = "Job role ARN"
+    type        = string
+    default     = ""
+}
+
+variable "execution_role_arn" {
+  description = "Execution role arn"
+  type        = string
+  default     = ""
+}
+
 variable "container_maps" {
   description = "value"
   type        = list(map(string))
