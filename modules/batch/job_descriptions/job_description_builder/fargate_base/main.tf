@@ -1,9 +1,10 @@
 data "aws_caller_identity" "current" {}
 
 locals {
-    job_description_name       = var.job_description_name
+    container_map              = var.container_map
+    job_description_name       = local.container_map.name
     deregister_on_new_revision = var.deregister_on_new_revision
-    ecr_image_url              = var.ecr_image_url
+    ecr_image_url              = local.container_map.ecr_image_url
     execution_role_arn         = var.execution_role_arn
     job_role_arn               = var.job_role_arn
 }
