@@ -2,7 +2,11 @@
 variable "aws_region" {
   description = "AWS region"
   type        = string
-  default     = "eu-west-2"
+  default     = ""
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.aws_region))
+    error_message = "AWS region is not correctly formatted"
+  }
 }
 
 ## vpc cidr block variable
@@ -58,7 +62,7 @@ variable "project_name" {
   type        = string
   default     = ""
   validation {
-    condition     = can(regex("^[a-zA-Z-_]+$", var.project_name))
+    condition     = can(regex("^[a-z0-9-_]+$", var.project_name))
     error_message = "Project name is not correctly formatted"
   }
 }
@@ -107,6 +111,10 @@ variable "vpc_name" {
   description = "Name of VPC"
   type        = string
   default     = ""
+  validation {
+    condition     = can(regex("^[a-z0-9-_]+$", var.vpc_name))
+    error_message = "VPC name is not correctly formatted"
+  }
 }
 
 ## s3_raw_run_bucket
