@@ -3,10 +3,10 @@ variable "vpc_cidr_block" {
   description = "CIDR block for VPC"
   type        = string
   default     = ""
-  # validation {
-  #   condition     = can(regex("\\d+\\.\\d+\\.\\d+\\.\\d+\\/\\d+", var.vpc_cidr_block))
-  #   error_message = "VPC CIDR block is incorrectly formatted"
-  # }
+  validation {
+    condition     = can(regex("\\d+\\.\\d+\\.\\d+\\.\\d+\\/\\d+", var.vpc_cidr_block))
+    error_message = "VPC CIDR block is incorrectly formatted"
+  }
 }
 
 ## vpc public subnets
@@ -14,10 +14,10 @@ variable "public_subnet_cidr_blocks" {
   description = "Available cidr blocks for public subnets."
   type        = list(string)
   default     = []
-  # validation {
-  #   condition     = length(var.public_subnet_cidr_blocks) == 3
-  #   error_message = "Three public subnet cids list required"
-  # }
+  validation {
+    condition     = (length(var.public_subnet_cidr_blocks) >= 1) && (length(var.public_subnet_cidr_blocks) <= 3)
+    error_message = "Between one and three public subnet cids list required"
+  }
 }
 
 ## vpc private subnets
@@ -25,10 +25,10 @@ variable "private_subnet_cidr_blocks" {
   description = "Available cidr blocks for private subnets."
   type        = list(string)
   default     = []
-  # validation {
-  #   condition     = length(var.private_subnet_cidr_blocks) == 3
-  #   error_message = "Three private subnet cids list required"
-  # }
+  validation {
+    condition     = (length(var.private_subnet_cidr_blocks) >= 1) && (length(var.private_subnet_cidr_blocks) <= 3)
+    error_message = "Between one and three private subnet cids list required"
+  }
 }
 
 ## vpc enable_nat_gateway
@@ -106,4 +106,14 @@ variable "aws_region" {
   description = "AWS region"
   type        = string
   default     = "eu-west-2"
+}
+
+variable "az_limit" {
+  description = "AZ limit to use"
+  type        = int
+  default     = 1
+  validation {
+    condition     = (length(var.az_limit) >= 1) && (length(var.az_limit) <= 3)
+    error_message = "AZ limit should be between 1 and 3"
+  }
 }

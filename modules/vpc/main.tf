@@ -14,14 +14,15 @@ locals {
   enable_vpn_gateway = var.enable_vpn_gateway
   vpc_name           = var.vpc_name
   aws_region         = var.aws_region
+  az_limit           = var.az_limit
 
   public_subnet_cidr_blocks  = var.public_subnet_cidr_blocks
   private_subnet_cidr_blocks = var.private_subnet_cidr_blocks
 
-  private_subnets = slice(local.private_subnet_cidr_blocks, 0, 1)
-  public_subnets  = slice(local.public_subnet_cidr_blocks, 0, 1)
+  private_subnets = slice(local.private_subnet_cidr_blocks, 0, local.az_limit)
+  public_subnets  = slice(local.public_subnet_cidr_blocks, 0, local.az_limit)
 
-  azs  = slice(data.aws_availability_zones.available.names, 0, 1)
+  azs  = slice(data.aws_availability_zones.available.names, 0, local.az_limit)
   tags = merge(var.resource_tags, local.required_tags)
 }
 
@@ -67,7 +68,7 @@ resource "aws_vpc_security_group_egress_rule" "endpoint_security_group" {
 }
 
 
-resource "aws_vpc_endpoint" "batch-test-endpoint" {
+resource "aws_vpc_endpoint" "pipeline-batch-endpoint" {
   vpc_id            = module.vpc.vpc_id
   service_name      = "com.amazonaws.${local.aws_region}.batch"
   vpc_endpoint_type = "Interface"
@@ -79,7 +80,7 @@ resource "aws_vpc_endpoint" "batch-test-endpoint" {
   tags = local.tags
 }
 
-resource "aws_vpc_endpoint" "ecr-dkr-test-endpoint" {
+resource "aws_vpc_endpoint" "pipeline-ecr-dkr-endpoint" {
   vpc_id            = module.vpc.vpc_id
   service_name      = "com.amazonaws.${local.aws_region}.ecr.dkr"
   vpc_endpoint_type = "Interface"
@@ -91,7 +92,7 @@ resource "aws_vpc_endpoint" "ecr-dkr-test-endpoint" {
   tags = local.tags
 }
 
-resource "aws_vpc_endpoint" "ecr-api-test-endpoint" {
+resource "aws_vpc_endpoint" "pipeline-ecr-api-endpoint" {
   vpc_id            = module.vpc.vpc_id
   service_name      = "com.amazonaws.${local.aws_region}.ecr.api"
   vpc_endpoint_type = "Interface"
@@ -103,7 +104,7 @@ resource "aws_vpc_endpoint" "ecr-api-test-endpoint" {
   tags = local.tags
 }
 
-resource "aws_vpc_endpoint" "logs-test-endpoint" {
+resource "aws_vpc_endpoint" "pipeline-logs-endpoint" {
   vpc_id            = module.vpc.vpc_id
   service_name      = "com.amazonaws.${local.aws_region}.logs"
   vpc_endpoint_type = "Interface"
@@ -115,7 +116,7 @@ resource "aws_vpc_endpoint" "logs-test-endpoint" {
   tags = local.tags
 }
 
-resource "aws_vpc_endpoint" "ecs-test-endpoint" {
+resource "aws_vpc_endpoint" "pipeline-ecs-endpoint" {
   vpc_id            = module.vpc.vpc_id
   service_name      = "com.amazonaws.${local.aws_region}.ecs"
   vpc_endpoint_type = "Interface"
@@ -127,7 +128,7 @@ resource "aws_vpc_endpoint" "ecs-test-endpoint" {
   tags = local.tags
 }
 
-resource "aws_vpc_endpoint" "ecs-agent-test-endpoint" {
+resource "aws_vpc_endpoint" "pipeline-ecs-agent-endpoint" {
   vpc_id            = module.vpc.vpc_id
   service_name      = "com.amazonaws.${local.aws_region}.ecs-agent"
   vpc_endpoint_type = "Interface"
@@ -139,7 +140,7 @@ resource "aws_vpc_endpoint" "ecs-agent-test-endpoint" {
   tags = local.tags
 }
 
-resource "aws_vpc_endpoint" "ecs-telemetry-test-endpoint" {
+resource "aws_vpc_endpoint" "pipeline-ecs-telemetry-endpoint" {
   vpc_id            = module.vpc.vpc_id
   service_name      = "com.amazonaws.${local.aws_region}.ecs-telemetry"
   vpc_endpoint_type = "Interface"
@@ -151,7 +152,7 @@ resource "aws_vpc_endpoint" "ecs-telemetry-test-endpoint" {
   tags = local.tags
 }
 
-resource "aws_vpc_endpoint" "s3-test-endpoint" {
+resource "aws_vpc_endpoint" "pipeline-s3-endpoint" {
   vpc_id            = module.vpc.vpc_id
   service_name      = "com.amazonaws.${local.aws_region}.s3"
   vpc_endpoint_type = "Gateway"
