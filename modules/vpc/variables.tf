@@ -110,10 +110,10 @@ variable "aws_region" {
 
 variable "az_limit" {
   description = "AZ limit to use"
-  type        = int
+  type        = number
   default     = 1
   validation {
-    condition     = (length(var.az_limit) >= 1) && (length(var.az_limit) <= 3)
+    condition     = (var.az_limit >= 1) && (var.az_limit <= 3)
     error_message = "AZ limit should be between 1 and 3"
   }
 }
