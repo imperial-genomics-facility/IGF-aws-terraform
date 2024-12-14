@@ -60,3 +60,58 @@ output "pipeline-s3-endpoint-arn" {
   description = "pipeline-s3-endpoint-arn"
   value       = module.igf_vpc.pipeline-s3-endpoint-arn
 }
+
+output "batch_ecs_instance_role_arn" {
+    description = "ECS instance role ARN"
+    value       = module.igf_batch_roles.batch_ecs_instance_role_arn
+}
+
+output "batch_ecs_instance_role_name" {
+    description = "ECS instance role name"
+    value       = module.igf_batch_roles.batch_ecs_instance_role_name
+}
+
+output "batch_service_role_arn" {
+    description = "Batch service role ARN"
+    value       = module.igf_batch_roles.batch_service_role_arn
+}
+
+output "batch_service_role_profile_arn" {
+    description = "Batch service role ARN"
+    value       = module.igf_batch_roles.batch_service_role_profile_arn
+}
+
+output "batch_service_role_name" {
+    description = "Batch service role name"
+    value       = module.igf_batch_roles.batch_service_role_name
+}
+
+output "batch_job_role_arn" {
+    description = "Batch job role"
+    value       = module.igf_batch_roles.batch_job_role_arn
+}
+
+output "batch_job_role_name" {
+    description = "Batch job role name"
+    value       = module.igf_batch_roles.batch_job_role_name
+}
+
+output "batch_execution_role_arn" {
+    description = "Batch service role ARN"
+    value       = module.igf_batch_roles.batch_execution_role_arn
+}
+
+output "batch_execution_role_name" {
+    description = "Batch service role name"
+    value       = module.igf_batch_roles.batch_execution_role_name
+}
+
+output "batch_spot_fleet_tagging_role_arn" {
+    description = "SPOT Fleet Tagging role ARN"
+    value       = module.igf_batch_roles.batch_spot_fleet_tagging_role_arn
+}
+
+output "batch_spot_fleet_tagging_role_name" {
+    description = "SPOT Fleet Tagging role name"
+    value       = module.igf_batch_roles.batch_spot_fleet_tagging_role_name
+}
