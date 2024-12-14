@@ -77,7 +77,7 @@ resource "aws_vpc_endpoint" "pipeline-batch-endpoint" {
   security_group_ids = [
     aws_security_group.endpoint_security_group.id
   ]
-  tags = local.tags
+  tags = merge(local.tags, {"Name": "pipeline-batch-endpoint"})
 }
 
 resource "aws_vpc_endpoint" "pipeline-ecr-dkr-endpoint" {
@@ -89,7 +89,7 @@ resource "aws_vpc_endpoint" "pipeline-ecr-dkr-endpoint" {
   security_group_ids = [
     aws_security_group.endpoint_security_group.id
   ]
-  tags = local.tags
+  tags = merge(local.tags, {"Name": "pipeline-ecr-dkr-endpoint"})
 }
 
 resource "aws_vpc_endpoint" "pipeline-ecr-api-endpoint" {
@@ -101,7 +101,7 @@ resource "aws_vpc_endpoint" "pipeline-ecr-api-endpoint" {
   security_group_ids = [
     aws_security_group.endpoint_security_group.id
   ]
-  tags = local.tags
+  tags = merge(local.tags, {"Name": "pipeline-ecr-api-endpoint"})
 }
 
 resource "aws_vpc_endpoint" "pipeline-logs-endpoint" {
@@ -113,7 +113,7 @@ resource "aws_vpc_endpoint" "pipeline-logs-endpoint" {
   security_group_ids = [
     aws_security_group.endpoint_security_group.id
   ]
-  tags = local.tags
+  tags = merge(local.tags, {"Name": "pipeline-logs-endpoint"})
 }
 
 resource "aws_vpc_endpoint" "pipeline-ecs-endpoint" {
@@ -125,7 +125,7 @@ resource "aws_vpc_endpoint" "pipeline-ecs-endpoint" {
   security_group_ids = [
     aws_security_group.endpoint_security_group.id
   ]
-  tags = local.tags
+  tags = merge(local.tags, {"Name": "pipeline-ecs-endpoint"})
 }
 
 resource "aws_vpc_endpoint" "pipeline-ecs-agent-endpoint" {
@@ -137,7 +137,7 @@ resource "aws_vpc_endpoint" "pipeline-ecs-agent-endpoint" {
   security_group_ids = [
     aws_security_group.endpoint_security_group.id
   ]
-  tags = local.tags
+  tags = merge(local.tags, {"Name": "pipeline-ecs-agent-endpoint"})
 }
 
 resource "aws_vpc_endpoint" "pipeline-ecs-telemetry-endpoint" {
@@ -149,7 +149,7 @@ resource "aws_vpc_endpoint" "pipeline-ecs-telemetry-endpoint" {
   security_group_ids = [
     aws_security_group.endpoint_security_group.id
   ]
-  tags = local.tags
+  tags = merge(local.tags, {"Name": "pipeline-ecs-telemetry-endpoint"})
 }
 
 resource "aws_vpc_endpoint" "pipeline-s3-endpoint" {
@@ -158,5 +158,5 @@ resource "aws_vpc_endpoint" "pipeline-s3-endpoint" {
   vpc_endpoint_type = "Gateway"
 
   route_table_ids  = module.vpc.private_route_table_ids
-  tags = local.tags
+  tags = merge(local.tags, {"Name": "pipeline-s3-endpoint"})
 }
