@@ -40,7 +40,7 @@ output "pipeline-logs-endpoint-arn" {
 
 output "pipeline-ecs-endpoint-arn" {
   description = "pipeline-ecs-endpoint"
-  value       = aws_vpc_endpoint.pipeline-ecs-endpoint
+  value       = aws_vpc_endpoint.pipeline-ecs-endpoint.arn
 }
 
 output "pipeline-ecs-agent-endpoint-arn" {
