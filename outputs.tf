@@ -115,3 +115,18 @@ output "batch_spot_fleet_tagging_role_name" {
     description = "SPOT Fleet Tagging role name"
     value       = module.igf_batch_roles.batch_spot_fleet_tagging_role_name
 }
+
+output "main_s3_bucket_arn" {
+  description = "main_s3_bucket"
+  value = module.igf_s3_bucket.main_s3_bucket_arn
+}
+
+output "log_bucket_arn" {
+  description = "log_bucket"
+  value = module.igf_s3_bucket.log_bucket_arn
+}
+
+output "static_resource_s3_bucket_arn" {
+  description = "static_resource_s3_bucket"
+  value = module.igf_s3_bucket.static_resource_s3_bucket_arn
+}
